@@ -1,31 +1,63 @@
 <?php
-    const SERVER = 'mysql220.phy.lolipop.lan';
-    const DBNAME = 'LAA1516826-final';
-    const USER = 'LAA1516826';
-    const PASS = 'final';
-    $connect = 'mysql:host='. SERVER . ';dbname='. DBNAME . ';charset=utf8';
+session_start();
+require 'header.php';
+require 'menu.php';
+
+const SERVER = 'mysql220.phy.lolipop.lan';
+const DBNAME = 'LAA1516826-final';
+const USER = 'LAA1516826';
+const PASS = 'final';
+
+$connect = 'mysql:host=' . SERVER . ';dbname=' . DBNAME . ';charset=utf8';
+
+$MeatPartID = isset($_SESSION['AnimalMeat']['MeatPartID']) ? $_SESSION['AnimalMeat']['MeatPartID'] : '';
+$AnimalName = isset($_SESSION['AnimalMeat']['AnimalName']) ? $_SESSION['AnimalMeat']['AnimalName'] : '';
+
+// データベースに接続
+$pdo = new PDO($connect, USER, PASS);
+
+// 更新が成功したかどうかの確認
+$updateSuccess = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // フォームからのデータ取得
+    $MeatPartID = isset($_POST['MeatPartID']) ? $_POST['MeatPartID'] : '';
+    $AnimalName = isset($_POST['AnimalName']) ? $_POST['AnimalName'] : '';
+
+    // 入力値のバリデーションなどが必要ならここで行ってください
+
+    // セッションにデータを保存
+    $_SESSION['AnimalMeat']['MeatPartID'] = $MeatPartID;
+    $_SESSION['AnimalMeat']['AnimalName'] = $AnimalName;
+
+    if (!empty($MeatPartID)) {
+        // データベースに更新を反映
+        $updateSql = $pdo->prepare('UPDATE AnimalMeat SET AnimalName = ? WHERE MeatPartID = ?');
+        $updateSuccess = $updateSql->execute([$AnimalName, $MeatPartID]);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="ja">
-	<head>
-		<meta charset="UTF-8">
-		<title></title>
-	</head>
-	<body>
+<head>
+    <meta charset="UTF-8">
+    <title>更新結果</title>
+</head>
+<body>
+
 <?php
-    $pdo=new PDO($connect, USER, PASS);
-    $sql=$pdo->prepare('update Shohin set shoin_mei=?,shohin_setu=?,shohin_price=?,shohin_gazo=? where shohin_number=?');
-    $sql=$pdo->prepare('update Detail set shohin_sport=?,shohin_burnd=?,shohin_kate=? where shohin_number=?');
-    $sql=$pdo->prepare('update Stock set konyu_kazu=?,stock_kazu=? where shohin_number=?');
-    if($sql->execute([htmlspecialchars($_POST['shohin_mei']),($_POST['shohin_setu']),($_POST['shohin_price']),($_POST['shohin_gazo']),($_POST['shohin_sport']),($_POST['shohin_burnd']),($_POST['shohin_kate']),($_POST['konyu_kazu']),($_POST['shohin_number']),$_POST['shohin_number']])){
-        // var_dump($sql);
-        echo '更新に成功しました。';
-    }else{
-        echo '更新に失敗しました。';
-    }
-    
+if ($updateSuccess) {
+    echo '更新に成功しました。';
+} else {
+    echo '更新に失敗しました。';
+}
 ?>
-        <button onclick="location.href='ren6-6-input.php'">更新画面へ戻る</button>
-    </body>
+
+<button onclick="location.href='List.php'">一覧画面へ戻る</button>
+
+<?php require 'footer.php'; ?>
+
+</body>
 </html>

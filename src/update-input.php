@@ -13,6 +13,8 @@ $connect = 'mysql:host=' . SERVER . ';dbname=' . DBNAME . ';charset=utf8';
 $MeatPartID = isset($_SESSION['AnimalMeat']['MeatPartID']) ? $_SESSION['AnimalMeat']['MeatPartID'] : '';
 $AnimalName = isset($_SESSION['AnimalMeat']['AnimalName']) ? $_SESSION['AnimalMeat']['AnimalName'] : '';
 
+$updateSuccess = false;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // フォームからのデータ取得
     $MeatPartID = isset($_POST['MeatPartID']) ? $_POST['MeatPartID'] : '';
@@ -28,22 +30,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // データベースに更新を反映
         $pdo = new PDO($connect, USER, PASS);
         $updateSql = $pdo->prepare('UPDATE AnimalMeat SET AnimalName = ? WHERE MeatPartID = ?');
-        $updateSql->execute([$AnimalName, $MeatPartID]);
-
-        // 更新が完了したらリダイレクト
-        header('Location: List.php');
-        exit();
+        $updateSuccess = $updateSql->execute([$AnimalName, $MeatPartID]);
     }
 }
 ?>
 
-<form method="post" action="">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>更新結果</title>
+</head>
+<body>
+
+<form method="post" action="update-output.php">
     <table>
         <h1>更新画面</h1>
         <tr><td>部位IDを入力してください</td><td><input type="number" name="MeatPartID" value="<?php echo htmlspecialchars($MeatPartID); ?>"></td></tr>
         <tr><td>動物名を入力してください</td><td><input type="text" name="AnimalName" value="<?php echo htmlspecialchars($AnimalName); ?>"></td></tr>
     </table>
-    <button onclick="location.href='List.php'" class="de">更新</button>
+    <button type="submit" class="de">更新</button>
 </form>
 
 <?php require 'footer.php'; ?>
+
+</body>
+</html>

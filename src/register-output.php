@@ -42,7 +42,7 @@ try {
     $stmt->execute();
 
     // 例: データを表示してみる
-    echo '<h1>登録画面</h1>';
+    echo '<h1>登録完了</h1>';
     echo '<p>部位ID: ' . htmlspecialchars($MeatPartID) . '</p>';
     echo '<p>動物名: ' . htmlspecialchars($AnimalName) . '</p>';
 } catch (PDOException $e) {
