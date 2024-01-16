@@ -4,7 +4,6 @@
 <form action="List.php" method="post">
 商品検索
 <input type="text" name="keyword">
-<input type="submit" value="検索">
 </form>
 <hr>
 <?php
