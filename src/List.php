@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     
     if ($deleteSql->execute([$deleteId])) {
         // 削除が成功した場合の処理
+        echo '削除が完了しました。';
         header('Location: delete.php');
         exit();
     } else {
